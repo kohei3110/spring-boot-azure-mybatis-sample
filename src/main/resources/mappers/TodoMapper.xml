@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.todoapp.mapper.TodoMapper">
+    <resultMap id="TodoResultMap" type="com.example.todoapp.domain.Todo">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="completed" property="completed" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <select id="findAll" resultMap="TodoResultMap">
+        SELECT id, title, completed, created_at, updated_at
+        FROM todos
+        ORDER BY id DESC
+    </select>
+
+    <select id="findById" parameterType="long" resultMap="TodoResultMap">
+        SELECT id, title, completed, created_at, updated_at
+        FROM todos
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.example.todoapp.domain.Todo">
+        INSERT INTO todos (title, completed, created_at, updated_at)
+        VALUES (#{title}, #{completed}, SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET());
+        <selectKey keyProperty="id" order="AFTER" resultType="long">
+            SELECT CAST(SCOPE_IDENTITY() AS BIGINT)
+        </selectKey>
+    </insert>
+
+    <update id="update" parameterType="com.example.todoapp.domain.Todo">
+        UPDATE todos
+        SET title = #{title},
+            completed = #{completed},
+            updated_at = SYSDATETIMEOFFSET()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM todos WHERE id = #{id}
+    </delete>
+</mapper>
